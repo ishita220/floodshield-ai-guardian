@@ -36,7 +36,13 @@ export function FloodMap({
   const { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, Polyline } = RL;
 
   const hasPath = !!path && path.length > 1;
-  const bounds = hasPath ? path : undefined;
+  const bounds = hasPath
+    ? ([
+        [Math.min(...path!.map((p) => p[0])), Math.min(...path!.map((p) => p[1]))],
+        [Math.max(...path!.map((p) => p[0])), Math.max(...path!.map((p) => p[1]))],
+      ] as [[number, number], [number, number]])
+    : undefined;
+
 
   return (
     <div className="rounded-2xl overflow-hidden relative border border-glass-border shadow-glass" style={{ height }}>
