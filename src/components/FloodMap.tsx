@@ -42,9 +42,10 @@ export function FloodMap({
     <div className="rounded-2xl overflow-hidden relative border border-glass-border shadow-glass" style={{ height }}>
       <MapContainer
         key={hasPath ? `p-${path!.length}-${path![0][0].toFixed(3)}-${path![path!.length - 1][1].toFixed(3)}` : "base"}
-        center={center}
-        zoom={zoom}
+        center={hasPath ? undefined : center}
+        zoom={hasPath ? undefined : zoom}
         bounds={bounds}
+
         boundsOptions={{ padding: [24, 24] }}
         scrollWheelZoom={interactive}
         dragging={interactive}
