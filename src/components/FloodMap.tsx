@@ -46,10 +46,17 @@ export function FloodMap({
   function FitBounds({ b }: { b?: [[number, number], [number, number]] }) {
     const map = useMap();
     useEffect(() => {
-      if (b) map.fitBounds(b, { padding: [24, 24] });
+      if (!b) return;
+      const t = setTimeout(() => {
+        map.invalidateSize();
+        map.fitBounds(b, { padding: [24, 24] });
+        console.log("fitBounds", b);
+      }, 150);
+      return () => clearTimeout(t);
     }, [map, b && JSON.stringify(b)]);
     return null;
   }
+
 
   return (
     <div className="rounded-2xl overflow-hidden relative border border-glass-border shadow-glass" style={{ height }}>
