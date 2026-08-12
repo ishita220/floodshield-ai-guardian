@@ -33,7 +33,7 @@ export function FloodMap({
     );
   }
 
-  const { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, Polyline } = RL;
+  const { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, Polyline, useMap } = RL;
 
   const hasPath = !!path && path.length > 1;
   const bounds = hasPath
@@ -43,16 +43,20 @@ export function FloodMap({
       ] as [[number, number], [number, number]])
     : undefined;
 
+  function FitBounds({ b }: { b?: [[number, number], [number, number]] }) {
+    const map = useMap();
+    useEffect(() => {
+      if (b) map.fitBounds(b, { padding: [24, 24] });
+    }, [map, b && JSON.stringify(b)]);
+    return null;
+  }
 
   return (
     <div className="rounded-2xl overflow-hidden relative border border-glass-border shadow-glass" style={{ height }}>
       <MapContainer
-        key={hasPath ? `p-${path!.length}-${path![0][0].toFixed(3)}-${path![path!.length - 1][1].toFixed(3)}` : "base"}
-        center={hasPath ? undefined : center}
-        zoom={hasPath ? undefined : zoom}
-        bounds={bounds}
+        center={center}
+        zoom={zoom}
 
-        boundsOptions={{ padding: [24, 24] }}
         scrollWheelZoom={interactive}
         dragging={interactive}
         zoomControl={false}
