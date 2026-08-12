@@ -44,20 +44,18 @@ export function FloodMap({
     : undefined;
 
   function FitBounds({ b }: { b?: [[number, number], [number, number]] }) {
-    (window as any).__fitRender = ((window as any).__fitRender ?? 0) + 1;
     const map = useMap();
     useEffect(() => {
-      (window as any).__fitEffect = ((window as any).__fitEffect ?? 0) + 1;
       if (!b) return;
       const t = setTimeout(() => {
         map.invalidateSize();
         map.fitBounds(b, { padding: [24, 24] });
-        (window as any).__fitDone = b;
       }, 150);
       return () => clearTimeout(t);
     }, [map, b && JSON.stringify(b)]);
     return null;
   }
+
 
 
 
