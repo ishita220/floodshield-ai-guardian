@@ -64,6 +64,8 @@ export function FloodMap({
         style={{ height: "100%", width: "100%", background: "#0a1020" }}
       >
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <FitBounds b={bounds} />
+
         {hasPath && (
           <>
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 7, opacity: 0.25 }} />
