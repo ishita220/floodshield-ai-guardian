@@ -41,11 +41,29 @@ export function FloodMap({
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
+  const [pulseOn, setPulseOn] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     import("react-leaflet").then((m) => setRL(m));
   }, []);
+
+  const changedKey = (segments ?? []).map((s) => (s.changed ? "1" : "0")).join("");
+  useEffect(() => {
+    if (!changedKey.includes("1")) return;
+    let n = 0;
+    setPulseOn(true);
+    const id = setInterval(() => {
+      n += 1;
+      setPulseOn(n % 2 === 0);
+      if (n >= 6) {
+        clearInterval(id);
+        setPulseOn(false);
+      }
+    }, 350);
+    return () => clearInterval(id);
+  }, [changedKey]);
+
 
   if (!mounted || !RL) {
     return (
