@@ -80,7 +80,7 @@ export const computeSafeRoutes = createServerFn({ method: "POST" })
       method: "POST",
       headers: gatewayHeaders({
         "X-Goog-FieldMask":
-          "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.description,routes.legs.startLocation,routes.legs.endLocation",
+          "routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.description,routes.legs.startLocation,routes.legs.endLocation,routes.legs.steps.navigationInstruction,routes.legs.steps.distanceMeters,routes.legs.steps.staticDuration,routes.legs.steps.polyline.encodedPolyline",
       }),
       body: JSON.stringify({
         origin: toWaypoint(data.origin),
