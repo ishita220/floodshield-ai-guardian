@@ -167,6 +167,17 @@ function RoutesScreen() {
             distance: formatDistance(r.distanceMeters),
             path,
             risk: scoreRoute(path),
+            steps: (r.steps ?? []).map((s) => {
+              const sp = decodePolyline(s.encodedPolyline);
+              return {
+                instruction: s.instruction,
+                maneuver: s.maneuver,
+                distance: formatDistance(s.distanceMeters),
+                duration: formatDuration(s.durationSeconds),
+                path: sp,
+                risk: scoreRoute(sp),
+              };
+            }),
           };
         })
         .sort((a, b) => a.risk.score - b.risk.score);
