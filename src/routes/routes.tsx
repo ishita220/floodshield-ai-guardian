@@ -146,6 +146,7 @@ function RoutesScreen() {
   );
 
   const active = routes.find((r) => r.id === selected) ?? routes[0] ?? null;
+  const activeStep = active && stepIndex !== null ? active.steps[stepIndex] ?? null : null;
 
   async function findRoutes() {
     if (!from.label.trim() || !to.label.trim()) return;
