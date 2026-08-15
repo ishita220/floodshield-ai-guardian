@@ -191,6 +191,8 @@ function RoutesScreen() {
         scored[0].label = "AI Safe Route";
         setRoutes(scored);
         setSelected(scored[0].id);
+        setStepIndex(null);
+        setNavOpen(false);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not calculate routes. Try again.");
