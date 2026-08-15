@@ -257,7 +257,10 @@ function RoutesScreen() {
           return (
             <button
               key={r.id}
-              onClick={() => setSelected(r.id)}
+              onClick={() => {
+                setSelected(r.id);
+                setStepIndex(null);
+              }}
               className={`w-full text-left rounded-2xl p-4 transition border ${isActive ? "glass-strong border-primary/60 shadow-neon" : "glass border-transparent"}`}
             >
               <div className="flex items-center justify-between">
