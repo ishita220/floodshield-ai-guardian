@@ -2,6 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { FloodMap, LegendDot } from "@/components/FloodMap";
 import { RiskBadge } from "@/components/RiskBadge";
+import { ModeSelector } from "@/components/ModeSelector";
+import { useTravelMode } from "@/hooks/useTravelMode";
+import { classifyDepth, estimateDepthCm } from "@/lib/travelModes";
 import { riskZones } from "@/lib/mockData";
 import { Layers, Search, SlidersHorizontal, Siren } from "lucide-react";
 import { useState } from "react";
@@ -16,13 +19,22 @@ export const Route = createFileRoute("/map")({
 
 function MapScreen() {
   const [filter, setFilter] = useState<"all" | "low" | "moderate" | "severe">("all");
-  const filtered = filter === "all" ? riskZones : riskZones.filter((z) => z.level === filter);
+  const [mode, setMode] = useTravelMode();
+  const zones = riskZones.map((z) => {
+    const depthCm = estimateDepthCm(z);
+    return { ...z, depthCm, level: classifyDepth(depthCm, mode) };
+  });
+  const filtered = filter === "all" ? zones : zones.filter((z) => z.level === filter);
 
   return (
     <div className="relative h-full">
       <div className="px-5 pt-2 pb-3">
         <h1 className="text-xl font-bold">Flood Risk Map</h1>
         <p className="text-xs text-muted-foreground">Live AI heatmap · Gurgaon NCR</p>
+      </div>
+
+      <div className="px-5 mb-3">
+        <ModeSelector mode={mode} onChange={setMode} />
       </div>
 
       <div className="px-5">
@@ -51,7 +63,7 @@ function MapScreen() {
       </div>
 
       <div className="px-5 mt-3">
-        <FloodMap height={340} center={[28.4595, 77.0266]} zoom={12} />
+        <FloodMap height={340} center={[28.4595, 77.0266]} zoom={12} mode={mode} />
       </div>
 
       <div className="px-5 mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
@@ -73,7 +85,7 @@ function MapScreen() {
                 <RiskBadge level={z.level} />
               </div>
               <p className="text-[11px] text-muted-foreground mt-1">
-                {z.area} · Drainage {z.drainage}% · {z.elevation} elev. · {z.reports} reports
+                {z.area} · ~{z.depthCm} cm water · Drainage {z.drainage}% · {z.reports} reports
               </p>
             </div>
             <Link to="/sos" className="h-9 w-9 rounded-xl gradient-danger flex items-center justify-center shrink-0">
