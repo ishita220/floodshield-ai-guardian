@@ -8,6 +8,8 @@ export function FloodMap({
   interactive = true,
   path,
   endpoints,
+  highlight,
+  highlightSafe = true,
 }: {
   height?: number | string;
   center?: [number, number];
@@ -15,6 +17,8 @@ export function FloodMap({
   interactive?: boolean;
   path?: [number, number][];
   endpoints?: { start?: [number, number] | null; end?: [number, number] | null };
+  highlight?: [number, number][] | null;
+  highlightSafe?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
@@ -78,6 +82,18 @@ export function FloodMap({
           <>
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 7, opacity: 0.25 }} />
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 3.5, opacity: 0.95 }} />
+          </>
+        )}
+        {highlight && highlight.length > 1 && (
+          <>
+            <Polyline
+              positions={highlight}
+              pathOptions={{ color: highlightSafe ? "#22c55e" : "#f59e0b", weight: 12, opacity: 0.25 }}
+            />
+            <Polyline
+              positions={highlight}
+              pathOptions={{ color: highlightSafe ? "#22c55e" : "#f59e0b", weight: 5, opacity: 1 }}
+            />
           </>
         )}
         {endpoints?.start && (
