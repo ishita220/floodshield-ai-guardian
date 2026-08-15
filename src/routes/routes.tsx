@@ -287,9 +287,92 @@ function RoutesScreen() {
       </div>
 
       {active && (
-        <button className="w-full rounded-2xl gradient-neon text-neon-foreground font-semibold py-3.5 flex items-center justify-center gap-2 shadow-neon">
-          <Navigation className="h-4 w-4" /> Start safe navigation <ArrowRight className="h-4 w-4" />
+        <button
+          onClick={() => {
+            setNavOpen((v) => !v);
+            if (!navOpen) setStepIndex(0);
+          }}
+          className="w-full rounded-2xl gradient-neon text-neon-foreground font-semibold py-3.5 flex items-center justify-center gap-2 shadow-neon"
+        >
+          <Navigation className="h-4 w-4" /> {navOpen ? "Hide turn-by-turn" : "Start safe navigation"} <ArrowRight className="h-4 w-4" />
         </button>
+      )}
+
+      {active && navOpen && active.steps.length > 0 && (
+        <div className="glass rounded-2xl p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold">Turn-by-turn</p>
+            <p className="text-[10px] text-muted-foreground">
+              {active.steps.filter((s) => s.risk.level === "low").length}/{active.steps.length} low-risk segments
+            </p>
+          </div>
+
+          <div className="flex items-center gap-1">
+            {active.steps.map((s, i) => (
+              <span
+                key={i}
+                className="h-1.5 flex-1 rounded-full"
+                style={{
+                  background:
+                    s.risk.level === "severe" ? "var(--danger)" : s.risk.level === "moderate" ? "var(--warning)" : "var(--safe)",
+                  opacity: stepIndex === i ? 1 : 0.45,
+                }}
+              />
+            ))}
+          </div>
+
+          <div className="space-y-1.5 max-h-72 overflow-y-auto pr-1">
+            {active.steps.map((s, i) => {
+              const isSafe = s.risk.level === "low";
+              const isCurrent = stepIndex === i;
+              return (
+                <button
+                  key={i}
+                  onClick={() => setStepIndex(i)}
+                  className={`w-full text-left rounded-xl p-3 border transition ${
+                    isCurrent
+                      ? isSafe
+                        ? "border-safe/70 bg-safe/10"
+                        : "border-warning/70 bg-warning/10"
+                      : "border-transparent bg-secondary/50"
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <span
+                      className="mt-1 h-2 w-2 rounded-full shrink-0"
+                      style={{
+                        background:
+                          s.risk.level === "severe" ? "var(--danger)" : s.risk.level === "moderate" ? "var(--warning)" : "var(--safe)",
+                      }}
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs leading-snug">{s.instruction}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">
+                        {s.distance} · {s.duration}
+                        {isSafe ? " · low-risk segment" : ` · ${s.risk.zones.map((z) => z.name).join(", ") || "elevated risk"}`}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => setStepIndex((i) => Math.max(0, (i ?? 0) - 1))}
+              className="flex-1 rounded-xl bg-secondary/70 py-2 text-xs font-medium"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setStepIndex((i) => Math.min(active.steps.length - 1, (i ?? -1) + 1))}
+              className="flex-1 rounded-xl gradient-neon text-neon-foreground py-2 text-xs font-semibold shadow-neon"
+            >
+              Next step
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
