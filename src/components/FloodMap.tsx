@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
 import { riskZones, riskColor, RiskLevel } from "@/lib/mockData";
+import { classifyDepth, DEFAULT_TRAVEL_MODE, estimateDepthCm, TravelMode } from "@/lib/travelModes";
+
+export type RouteSegment = { path: [number, number][]; level: RiskLevel; changed?: boolean };
+
+const levelVar: Record<RiskLevel, string> = {
+  low: "--safe",
+  moderate: "--warning",
+  severe: "--danger",
+};
+
+const levelHex: Record<RiskLevel, string> = {
+  low: "#22c55e",
+  moderate: "#f59e0b",
+  severe: "#ef4444",
+};
 
 export function FloodMap({
   height = 240,
@@ -10,6 +25,8 @@ export function FloodMap({
   endpoints,
   highlight,
   highlightSafe = true,
+  segments,
+  mode = DEFAULT_TRAVEL_MODE,
 }: {
   height?: number | string;
   center?: [number, number];
@@ -19,6 +36,8 @@ export function FloodMap({
   endpoints?: { start?: [number, number] | null; end?: [number, number] | null };
   highlight?: [number, number][] | null;
   highlightSafe?: boolean;
+  segments?: RouteSegment[] | null;
+  mode?: TravelMode;
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
