@@ -29,6 +29,15 @@ export const Route = createFileRoute("/routes")({
 type Place = { placeId?: string; label: string };
 type Suggestion = { placeId: string; main: string; secondary: string; full: string };
 
+type ScoredStep = {
+  instruction: string;
+  maneuver: string;
+  distance: string;
+  duration: string;
+  path: [number, number][];
+  risk: RouteRisk;
+};
+
 type ScoredRoute = {
   id: string;
   label: string;
@@ -37,6 +46,7 @@ type ScoredRoute = {
   distance: string;
   path: [number, number][];
   risk: RouteRisk;
+  steps: ScoredStep[];
 };
 
 function PlaceInput({
