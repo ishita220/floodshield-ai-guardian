@@ -229,6 +229,8 @@ function RoutesScreen() {
         interactive
         path={active?.path}
         endpoints={active ? { start: active.path[0], end: active.path[active.path.length - 1] } : undefined}
+        highlight={activeStep?.path ?? null}
+        highlightSafe={activeStep ? activeStep.risk.level === "low" : true}
       />
 
       {error && (
