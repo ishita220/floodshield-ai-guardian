@@ -8,6 +8,8 @@ export function FloodMap({
   interactive = true,
   path,
   endpoints,
+  highlight,
+  highlightSafe = true,
 }: {
   height?: number | string;
   center?: [number, number];
@@ -15,6 +17,8 @@ export function FloodMap({
   interactive?: boolean;
   path?: [number, number][];
   endpoints?: { start?: [number, number] | null; end?: [number, number] | null };
+  highlight?: [number, number][] | null;
+  highlightSafe?: boolean;
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
