@@ -135,6 +135,8 @@ function RoutesScreen() {
   const [to, setTo] = useState<Place>({ label: "Connaught Place, New Delhi" });
   const [routes, setRoutes] = useState<ScoredRoute[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
+  const [stepIndex, setStepIndex] = useState<number | null>(null);
+  const [navOpen, setNavOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
