@@ -1,4 +1,5 @@
 import { riskZones, RiskLevel } from "@/lib/mockData";
+import { classifyDepth, DEFAULT_TRAVEL_MODE, estimateDepthCm, TravelMode } from "@/lib/travelModes";
 
 /** Decode a Google encoded polyline into [lat, lng] pairs. */
 export function decodePolyline(encoded: string): [number, number][] {
@@ -44,19 +45,28 @@ function metersBetween(a: [number, number], b: [number, number]) {
 
 export type RouteRisk = {
   level: RiskLevel;
-  zones: { name: string; level: RiskLevel; area: string }[];
+  zones: { name: string; level: RiskLevel; area: string; depthCm: number }[];
   score: number;
+  maxDepthCm: number;
 };
 
-/** Score a decoded path against known flood-risk zones. */
-export function scoreRoute(path: [number, number][]): RouteRisk {
+/** Score a decoded path against known flood-risk zones, using the travel mode's depth thresholds. */
+export function scoreRoute(path: [number, number][], mode: TravelMode = DEFAULT_TRAVEL_MODE): RouteRisk {
   const sampled = path.filter((_, i) => i % 3 === 0);
   const hit = riskZones.filter((z) => sampled.some((p) => metersBetween(p, z.coords) <= z.radius));
   const weight = { low: 1, moderate: 3, severe: 6 } as const;
-  const score = hit.reduce((sum, z) => sum + weight[z.level], 0);
-  const level: RiskLevel = hit.some((z) => z.level === "severe") ? "severe" : score >= 3 ? "moderate" : "low";
-  return { level, score, zones: hit.map((z) => ({ name: z.name, level: z.level, area: z.area })) };
+
+  const zones = hit.map((z) => {
+    const depthCm = estimateDepthCm(z);
+    return { name: z.name, area: z.area, depthCm, level: classifyDepth(depthCm, mode) };
+  });
+
+  const score = zones.reduce((sum, z) => sum + weight[z.level], 0);
+  const maxDepthCm = zones.reduce((m, z) => Math.max(m, z.depthCm), 0);
+  const level: RiskLevel = zones.some((z) => z.level === "severe") ? "severe" : score >= 3 ? "moderate" : "low";
+  return { level, score, zones, maxDepthCm };
 }
+
 
 export function formatDuration(seconds: number) {
   const mins = Math.round(seconds / 60);

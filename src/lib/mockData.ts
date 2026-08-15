@@ -32,13 +32,15 @@ export const riskZones: {
   drainage: number;
   elevation: string;
   reports: number;
+  /** Observed / estimated standing water depth in centimetres. */
+  depthCm: number;
 }[] = [
-  { id: "z1", name: "IFFCO Chowk Underpass", area: "Gurgaon", level: "severe", coords: [28.4733, 77.0726], radius: 700, drainage: 22, elevation: "Low", reports: 14 },
-  { id: "z2", name: "Cyber Hub Junction", area: "Gurgaon", level: "moderate", coords: [28.4949, 77.0894], radius: 600, drainage: 48, elevation: "Mid", reports: 6 },
-  { id: "z3", name: "Sector 29 Market", area: "Gurgaon", level: "moderate", coords: [28.4682, 77.0696], radius: 500, drainage: 55, elevation: "Mid", reports: 4 },
-  { id: "z4", name: "Hero Honda Chowk", area: "Gurgaon", level: "severe", coords: [28.4221, 76.9926], radius: 800, drainage: 18, elevation: "Low", reports: 21 },
-  { id: "z5", name: "Golf Course Road", area: "Gurgaon", level: "low", coords: [28.4419, 77.0954], radius: 450, drainage: 78, elevation: "High", reports: 1 },
-  { id: "z6", name: "MG Road Metro", area: "Gurgaon", level: "moderate", coords: [28.4796, 77.0805], radius: 500, drainage: 52, elevation: "Mid", reports: 5 },
+  { id: "z1", name: "IFFCO Chowk Underpass", area: "Gurgaon", level: "severe", coords: [28.4733, 77.0726], radius: 700, drainage: 22, elevation: "Low", reports: 14, depthCm: 62 },
+  { id: "z2", name: "Cyber Hub Junction", area: "Gurgaon", level: "moderate", coords: [28.4949, 77.0894], radius: 600, drainage: 48, elevation: "Mid", reports: 6, depthCm: 24 },
+  { id: "z3", name: "Sector 29 Market", area: "Gurgaon", level: "moderate", coords: [28.4682, 77.0696], radius: 500, drainage: 55, elevation: "Mid", reports: 4, depthCm: 18 },
+  { id: "z4", name: "Hero Honda Chowk", area: "Gurgaon", level: "severe", coords: [28.4221, 76.9926], radius: 800, drainage: 18, elevation: "Low", reports: 21, depthCm: 70 },
+  { id: "z5", name: "Golf Course Road", area: "Gurgaon", level: "low", coords: [28.4419, 77.0954], radius: 450, drainage: 78, elevation: "High", reports: 1, depthCm: 4 },
+  { id: "z6", name: "MG Road Metro", area: "Gurgaon", level: "moderate", coords: [28.4796, 77.0805], radius: 500, drainage: 52, elevation: "Mid", reports: 5, depthCm: 28 },
 ];
 
 export const alerts = [

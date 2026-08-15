@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/AppLayout";
-import { FloodMap } from "@/components/FloodMap";
+import { FloodMap, RouteSegment } from "@/components/FloodMap";
+import { ModeSelector } from "@/components/ModeSelector";
+import { useTravelMode } from "@/hooks/useTravelMode";
+import { modeLabel, modeShort } from "@/lib/travelModes";
 import { RiskBadge } from "@/components/RiskBadge";
 import { computeSafeRoutes, suggestPlaces } from "@/lib/routing.functions";
 import { decodePolyline, formatDistance, formatDuration, scoreRoute, RouteRisk } from "@/lib/routeRisk";
@@ -127,13 +130,23 @@ function PlaceInput({
   );
 }
 
+type RawRoute = {
+  id: string;
+  description: string;
+  duration: string;
+  distance: string;
+  path: [number, number][];
+  steps: { instruction: string; maneuver: string; distance: string; duration: string; path: [number, number][] }[];
+};
+
 function RoutesScreen() {
   const suggest = useServerFn(suggestPlaces);
   const compute = useServerFn(computeSafeRoutes);
 
   const [from, setFrom] = useState<Place>({ label: "DLF Cyber City, Gurgaon" });
   const [to, setTo] = useState<Place>({ label: "Connaught Place, New Delhi" });
-  const [routes, setRoutes] = useState<ScoredRoute[]>([]);
+  const [raw, setRaw] = useState<RawRoute[]>([]);
+  const [mode, setMode] = useTravelMode();
   const [selected, setSelected] = useState<string | null>(null);
   const [stepIndex, setStepIndex] = useState<number | null>(null);
   const [navOpen, setNavOpen] = useState(false);
@@ -145,63 +158,98 @@ function RoutesScreen() {
     [suggest],
   );
 
+  // Re-classify already-fetched routes whenever the travel mode changes — no refetch.
+  const routes: ScoredRoute[] = useMemo(() => {
+    const scored = raw.map((r) => ({
+      ...r,
+      label: r.description || "Route",
+      risk: scoreRoute(r.path, mode),
+      steps: r.steps.map((s) => ({ ...s, risk: scoreRoute(s.path, mode) })),
+    }));
+    // Safest first: no high-risk segments, then fewest moderate segments, then time.
+    scored.sort((a, b) => {
+      const hi = (r: ScoredRoute) => r.steps.filter((s) => s.risk.level === "severe").length;
+      const mid = (r: ScoredRoute) => r.steps.filter((s) => s.risk.level === "moderate").length;
+      return hi(a) - hi(b) || mid(a) - mid(b) || a.risk.score - b.risk.score;
+    });
+    if (scored.length > 0 && scored[0].steps.every((s) => s.risk.level !== "severe")) {
+      scored[0].label = "AI Safe Route";
+    }
+    return scored;
+  }, [raw, mode]);
+
+  const noSafeRoute = routes.length > 0 && routes.every((r) => r.steps.some((s) => s.risk.level === "severe"));
+
   const active = routes.find((r) => r.id === selected) ?? routes[0] ?? null;
   const activeStep = active && stepIndex !== null ? active.steps[stepIndex] ?? null : null;
+
+  // Track which segments changed risk level after a mode switch, to pulse them on the map.
+  const prevLevels = useRef<Record<string, string>>({});
+  const [changedKeys, setChangedKeys] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    if (!active) return;
+    const next: Record<string, string> = {};
+    const changed = new Set<string>();
+    active.steps.forEach((s, i) => {
+      const key = `${active.id}-${i}`;
+      next[key] = s.risk.level;
+      if (prevLevels.current[key] && prevLevels.current[key] !== s.risk.level) changed.add(key);
+    });
+    prevLevels.current = next;
+    setChangedKeys(changed);
+    if (changed.size === 0) return;
+    const t = setTimeout(() => setChangedKeys(new Set()), 2500);
+    return () => clearTimeout(t);
+  }, [active?.id, mode, routes]);
+
+  const segments: RouteSegment[] | null = active
+    ? active.steps.map((s, i) => ({ path: s.path, level: s.risk.level, changed: changedKeys.has(`${active.id}-${i}`) }))
+    : null;
 
   async function findRoutes() {
     if (!from.label.trim() || !to.label.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      const raw = await compute({
+      const res = await compute({
         data: {
           origin: from.placeId ? { placeId: from.placeId } : { address: from.label },
           destination: to.placeId ? { placeId: to.placeId } : { address: to.label },
         },
       });
-      const scored: ScoredRoute[] = raw
-        .map((r) => {
-          const path = decodePolyline(r.encodedPolyline);
-          return {
-            id: r.id,
-            label: r.description || "Route",
-            description: r.description,
-            duration: formatDuration(r.durationSeconds),
-            distance: formatDistance(r.distanceMeters),
-            path,
-            risk: scoreRoute(path),
-            steps: (r.steps ?? []).map((s) => {
-              const sp = decodePolyline(s.encodedPolyline);
-              return {
-                instruction: s.instruction,
-                maneuver: s.maneuver,
-                distance: formatDistance(s.distanceMeters),
-                duration: formatDuration(s.durationSeconds),
-                path: sp,
-                risk: scoreRoute(sp),
-              };
-            }),
-          };
-        })
-        .sort((a, b) => a.risk.score - b.risk.score);
+      const decoded: RawRoute[] = res.map((r) => ({
+        id: r.id,
+        description: r.description,
+        duration: formatDuration(r.durationSeconds),
+        distance: formatDistance(r.distanceMeters),
+        path: decodePolyline(r.encodedPolyline),
+        steps: (r.steps ?? []).map((s) => ({
+          instruction: s.instruction,
+          maneuver: s.maneuver,
+          distance: formatDistance(s.distanceMeters),
+          duration: formatDuration(s.durationSeconds),
+          path: decodePolyline(s.encodedPolyline),
+        })),
+      }));
 
-      if (scored.length === 0) {
+      if (decoded.length === 0) {
         setError("No driving route found between those locations.");
-        setRoutes([]);
+        setRaw([]);
       } else {
-        scored[0].label = "AI Safe Route";
-        setRoutes(scored);
-        setSelected(scored[0].id);
+        prevLevels.current = {};
+        setRaw(decoded);
+        setSelected(null);
         setStepIndex(null);
         setNavOpen(false);
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not calculate routes. Try again.");
-      setRoutes([]);
+      setRaw([]);
     } finally {
       setLoading(false);
     }
   }
+
 
   return (
     <div className="px-5 pt-2 pb-6 space-y-4">
@@ -209,6 +257,8 @@ function RoutesScreen() {
         <h1 className="text-xl font-bold">Smart Safe Route</h1>
         <p className="text-xs text-muted-foreground">AI-recommended path avoiding waterlogged roads</p>
       </header>
+
+      <ModeSelector mode={mode} onChange={setMode} />
 
       <div className="glass rounded-2xl p-3 space-y-2">
         <PlaceInput dotClass="bg-safe" placeholder="Starting point" value={from} onChange={setFrom} fetchSuggestions={fetchSuggestions} />
@@ -232,7 +282,18 @@ function RoutesScreen() {
         endpoints={active ? { start: active.path[0], end: active.path[active.path.length - 1] } : undefined}
         highlight={activeStep?.path ?? null}
         highlightSafe={activeStep ? activeStep.risk.level === "low" : true}
+        segments={segments}
+        mode={mode}
       />
+
+      {noSafeRoute && (
+        <div className="rounded-2xl p-3 flex items-start gap-2 border border-danger/40 bg-danger/10">
+          <TriangleAlert className="h-4 w-4 shrink-0 mt-0.5 text-danger" />
+          <p className="text-xs text-danger">
+            No safe {modeShort(mode)} route found. Consider {mode === "car" ? "waiting for water levels to recede" : "Two-Wheeler or Car"}, or wait for water levels to recede.
+          </p>
+        </div>
+      )}
 
       {error && (
         <div className="glass rounded-2xl p-3 flex items-start gap-2 text-xs text-danger">
@@ -245,7 +306,7 @@ function RoutesScreen() {
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl gradient-neon shadow-neon">
           <Sparkles className="h-4 w-4 text-neon-foreground" />
           <p className="text-xs font-medium text-neon-foreground">
-            AI analyzed {routes.length} live route{routes.length > 1 ? "s" : ""} ·{" "}
+            {modeLabel(mode)} mode · AI analyzed {routes.length} live route{routes.length > 1 ? "s" : ""} ·{" "}
             {routes.filter((r) => r.risk.level === "low").length} avoid flood-prone zones
           </p>
         </div>

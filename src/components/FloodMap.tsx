@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
 import { riskZones, riskColor, RiskLevel } from "@/lib/mockData";
+import { classifyDepth, DEFAULT_TRAVEL_MODE, estimateDepthCm, TravelMode } from "@/lib/travelModes";
+
+export type RouteSegment = { path: [number, number][]; level: RiskLevel; changed?: boolean };
+
+const levelVar: Record<RiskLevel, string> = {
+  low: "--safe",
+  moderate: "--warning",
+  severe: "--danger",
+};
+
+const levelHex: Record<RiskLevel, string> = {
+  low: "#22c55e",
+  moderate: "#f59e0b",
+  severe: "#ef4444",
+};
 
 export function FloodMap({
   height = 240,
@@ -10,6 +25,8 @@ export function FloodMap({
   endpoints,
   highlight,
   highlightSafe = true,
+  segments,
+  mode = DEFAULT_TRAVEL_MODE,
 }: {
   height?: number | string;
   center?: [number, number];
@@ -19,14 +36,34 @@ export function FloodMap({
   endpoints?: { start?: [number, number] | null; end?: [number, number] | null };
   highlight?: [number, number][] | null;
   highlightSafe?: boolean;
+  segments?: RouteSegment[] | null;
+  mode?: TravelMode;
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
+  const [pulseOn, setPulseOn] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     import("react-leaflet").then((m) => setRL(m));
   }, []);
+
+  const changedKey = (segments ?? []).map((s) => (s.changed ? "1" : "0")).join("");
+  useEffect(() => {
+    if (!changedKey.includes("1")) return;
+    let n = 0;
+    setPulseOn(true);
+    const id = setInterval(() => {
+      n += 1;
+      setPulseOn(n % 2 === 0);
+      if (n >= 6) {
+        clearInterval(id);
+        setPulseOn(false);
+      }
+    }, 350);
+    return () => clearInterval(id);
+  }, [changedKey]);
+
 
   if (!mounted || !RL) {
     return (
@@ -78,11 +115,24 @@ export function FloodMap({
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
         <FitBounds b={bounds} />
 
-        {hasPath && (
+        {hasPath && !segments?.length && (
           <>
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 7, opacity: 0.25 }} />
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 3.5, opacity: 0.95 }} />
           </>
+        )}
+        {segments?.map((seg, i) =>
+          seg.path.length > 1 ? (
+            <Polyline
+              key={`seg-${i}-${seg.level}-${seg.changed ? "c" : ""}`}
+              positions={seg.path}
+              pathOptions={{
+                color: levelHex[seg.level],
+                weight: seg.changed && pulseOn ? 9 : 4.5,
+                opacity: seg.changed && pulseOn ? 1 : 0.9,
+              }}
+            />
+          ) : null,
         )}
         {highlight && highlight.length > 1 && (
           <>
@@ -103,39 +153,44 @@ export function FloodMap({
           <CircleMarker center={endpoints.end} radius={6} pathOptions={{ color: "#fff", fillColor: "#ef4444", fillOpacity: 1, weight: 2 }} />
         )}
 
-        {riskZones.map((z) => (
-          <Circle
-            key={z.id}
-            center={z.coords}
-            radius={z.radius}
-            pathOptions={{
-              color: `var(--${z.level === "severe" ? "danger" : z.level === "moderate" ? "warning" : "safe"})`,
-              fillColor: `var(--${z.level === "severe" ? "danger" : z.level === "moderate" ? "warning" : "safe"})`,
-              fillOpacity: 0.25,
-              weight: 1.5,
-            }}
-          >
-            <Tooltip direction="top" opacity={0.95}>
-              <div style={{ fontSize: 11 }}>
-                <strong>{z.name}</strong><br />
-                {z.level.toUpperCase()} • {z.reports} reports
-              </div>
-            </Tooltip>
-          </Circle>
-        ))}
+        {riskZones.map((z) => {
+          const depth = estimateDepthCm(z);
+          const level = classifyDepth(depth, mode);
+          return (
+            <Circle
+              key={z.id + mode}
+              center={z.coords}
+              radius={z.radius}
+              pathOptions={{
+                color: `var(${levelVar[level]})`,
+                fillColor: `var(${levelVar[level]})`,
+                fillOpacity: 0.25,
+                weight: 1.5,
+              }}
+            >
+              <Tooltip direction="top" opacity={0.95}>
+                <div style={{ fontSize: 11 }}>
+                  <strong>{z.name}</strong><br />
+                  {level.toUpperCase()} • ~{depth} cm water • {z.reports} reports
+                </div>
+              </Tooltip>
+            </Circle>
+          );
+        })}
         {riskZones.map((z) => (
           <CircleMarker
-            key={z.id + "-m"}
+            key={z.id + "-m" + mode}
             center={z.coords}
             radius={4}
             pathOptions={{
               color: "#fff",
-              fillColor: `var(--${z.level === "severe" ? "danger" : z.level === "moderate" ? "warning" : "safe"})`,
+              fillColor: `var(${levelVar[classifyDepth(estimateDepthCm(z), mode)]})`,
               fillOpacity: 1,
               weight: 1.5,
             }}
           />
         ))}
+
       </MapContainer>
       <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/5 rounded-2xl" />
     </div>
