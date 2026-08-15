@@ -102,6 +102,12 @@ export const computeSafeRoutes = createServerFn({ method: "POST" })
         legs?: Array<{
           startLocation?: { latLng?: { latitude: number; longitude: number } };
           endLocation?: { latLng?: { latitude: number; longitude: number } };
+          steps?: Array<{
+            navigationInstruction?: { maneuver?: string; instructions?: string };
+            distanceMeters?: number;
+            staticDuration?: string;
+            polyline?: { encodedPolyline?: string };
+          }>;
         }>;
       }>;
     };
@@ -113,5 +119,14 @@ export const computeSafeRoutes = createServerFn({ method: "POST" })
       encodedPolyline: r.polyline?.encodedPolyline ?? "",
       start: r.legs?.[0]?.startLocation?.latLng ?? null,
       end: r.legs?.[r.legs.length - 1]?.endLocation?.latLng ?? null,
+      steps: (r.legs ?? []).flatMap((leg) =>
+        (leg.steps ?? []).map((s) => ({
+          instruction: s.navigationInstruction?.instructions ?? "Continue",
+          maneuver: s.navigationInstruction?.maneuver ?? "",
+          distanceMeters: s.distanceMeters ?? 0,
+          durationSeconds: Number((s.staticDuration ?? "0s").replace("s", "")),
+          encodedPolyline: s.polyline?.encodedPolyline ?? "",
+        })),
+      ),
     }));
   });
