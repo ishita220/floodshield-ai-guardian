@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { AppLayout } from "@/components/AppLayout";
-import { FloodMap } from "@/components/FloodMap";
+import { FloodMap, RouteSegment } from "@/components/FloodMap";
+import { ModeSelector } from "@/components/ModeSelector";
+import { useTravelMode } from "@/hooks/useTravelMode";
+import { modeLabel, modeShort } from "@/lib/travelModes";
 import { RiskBadge } from "@/components/RiskBadge";
 import { computeSafeRoutes, suggestPlaces } from "@/lib/routing.functions";
 import { decodePolyline, formatDistance, formatDuration, scoreRoute, RouteRisk } from "@/lib/routeRisk";
@@ -255,6 +258,8 @@ function RoutesScreen() {
         <p className="text-xs text-muted-foreground">AI-recommended path avoiding waterlogged roads</p>
       </header>
 
+      <ModeSelector mode={mode} onChange={setMode} />
+
       <div className="glass rounded-2xl p-3 space-y-2">
         <PlaceInput dotClass="bg-safe" placeholder="Starting point" value={from} onChange={setFrom} fetchSuggestions={fetchSuggestions} />
         <PlaceInput dotClass="bg-danger" placeholder="Destination" value={to} onChange={setTo} fetchSuggestions={fetchSuggestions} />
@@ -277,7 +282,18 @@ function RoutesScreen() {
         endpoints={active ? { start: active.path[0], end: active.path[active.path.length - 1] } : undefined}
         highlight={activeStep?.path ?? null}
         highlightSafe={activeStep ? activeStep.risk.level === "low" : true}
+        segments={segments}
+        mode={mode}
       />
+
+      {noSafeRoute && (
+        <div className="rounded-2xl p-3 flex items-start gap-2 border border-danger/40 bg-danger/10">
+          <TriangleAlert className="h-4 w-4 shrink-0 mt-0.5 text-danger" />
+          <p className="text-xs text-danger">
+            No safe {modeShort(mode)} route found. Consider {mode === "car" ? "waiting for water levels to recede" : "Two-Wheeler or Car"}, or wait for water levels to recede.
+          </p>
+        </div>
+      )}
 
       {error && (
         <div className="glass rounded-2xl p-3 flex items-start gap-2 text-xs text-danger">
@@ -290,7 +306,7 @@ function RoutesScreen() {
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl gradient-neon shadow-neon">
           <Sparkles className="h-4 w-4 text-neon-foreground" />
           <p className="text-xs font-medium text-neon-foreground">
-            AI analyzed {routes.length} live route{routes.length > 1 ? "s" : ""} ·{" "}
+            {modeLabel(mode)} mode · AI analyzed {routes.length} live route{routes.length > 1 ? "s" : ""} ·{" "}
             {routes.filter((r) => r.risk.level === "low").length} avoid flood-prone zones
           </p>
         </div>
