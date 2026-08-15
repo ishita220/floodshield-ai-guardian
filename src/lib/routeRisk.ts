@@ -1,4 +1,5 @@
 import { riskZones, RiskLevel } from "@/lib/mockData";
+import { classifyDepth, DEFAULT_TRAVEL_MODE, estimateDepthCm, TravelMode } from "@/lib/travelModes";
 
 /** Decode a Google encoded polyline into [lat, lng] pairs. */
 export function decodePolyline(encoded: string): [number, number][] {
