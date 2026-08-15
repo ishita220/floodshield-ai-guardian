@@ -84,6 +84,18 @@ export function FloodMap({
             <Polyline positions={path} pathOptions={{ color: "#22d3ee", weight: 3.5, opacity: 0.95 }} />
           </>
         )}
+        {highlight && highlight.length > 1 && (
+          <>
+            <Polyline
+              positions={highlight}
+              pathOptions={{ color: highlightSafe ? "#22c55e" : "#f59e0b", weight: 12, opacity: 0.25 }}
+            />
+            <Polyline
+              positions={highlight}
+              pathOptions={{ color: highlightSafe ? "#22c55e" : "#f59e0b", weight: 5, opacity: 1 }}
+            />
+          </>
+        )}
         {endpoints?.start && (
           <CircleMarker center={endpoints.start} radius={6} pathOptions={{ color: "#fff", fillColor: "#22c55e", fillOpacity: 1, weight: 2 }} />
         )}
