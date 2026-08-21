@@ -4,6 +4,14 @@ import { classifyDepth, DEFAULT_TRAVEL_MODE, estimateDepthCm, TravelMode } from 
 
 export type RouteSegment = { path: [number, number][]; level: RiskLevel; changed?: boolean };
 
+export type MapMarker = {
+  id: string;
+  position: [number, number];
+  color: string;
+  label: string;
+  sub?: string;
+};
+
 const levelVar: Record<RiskLevel, string> = {
   low: "--safe",
   moderate: "--warning",
