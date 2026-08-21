@@ -15,6 +15,10 @@ import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RoadsIndexRouteImport } from './routes/roads.index'
+import { Route as RoadsQueueRouteImport } from './routes/roads.queue'
+import { Route as RoadsEmergencyRouteImport } from './routes/roads.emergency'
+import { Route as RoadsArchitectureRouteImport } from './routes/roads.architecture'
 
 const SosRoute = SosRouteImport.update({
   id: '/sos',
@@ -46,6 +50,26 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadsIndexRoute = RoadsIndexRouteImport.update({
+  id: '/roads/',
+  path: '/roads/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadsQueueRoute = RoadsQueueRouteImport.update({
+  id: '/roads/queue',
+  path: '/roads/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadsEmergencyRoute = RoadsEmergencyRouteImport.update({
+  id: '/roads/emergency',
+  path: '/roads/emergency',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadsArchitectureRoute = RoadsArchitectureRouteImport.update({
+  id: '/roads/architecture',
+  path: '/roads/architecture',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -54,6 +78,10 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/architecture': typeof RoadsArchitectureRoute
+  '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/queue': typeof RoadsQueueRoute
+  '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +90,10 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/architecture': typeof RoadsArchitectureRoute
+  '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/queue': typeof RoadsQueueRoute
+  '/roads': typeof RoadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,13 +103,48 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/architecture': typeof RoadsArchitectureRoute
+  '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/queue': typeof RoadsQueueRoute
+  '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
+  fullPaths:
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/routes'
+    | '/sos'
+    | '/roads/architecture'
+    | '/roads/emergency'
+    | '/roads/queue'
+    | '/roads/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
-  id: '__root__' | '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
+  to:
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/routes'
+    | '/sos'
+    | '/roads/architecture'
+    | '/roads/emergency'
+    | '/roads/queue'
+    | '/roads'
+  id:
+    | '__root__'
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/routes'
+    | '/sos'
+    | '/roads/architecture'
+    | '/roads/emergency'
+    | '/roads/queue'
+    | '/roads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,6 +154,10 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   RoutesRoute: typeof RoutesRoute
   SosRoute: typeof SosRoute
+  RoadsArchitectureRoute: typeof RoadsArchitectureRoute
+  RoadsEmergencyRoute: typeof RoadsEmergencyRoute
+  RoadsQueueRoute: typeof RoadsQueueRoute
+  RoadsIndexRoute: typeof RoadsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -133,6 +204,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roads/': {
+      id: '/roads/'
+      path: '/roads'
+      fullPath: '/roads/'
+      preLoaderRoute: typeof RoadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roads/queue': {
+      id: '/roads/queue'
+      path: '/roads/queue'
+      fullPath: '/roads/queue'
+      preLoaderRoute: typeof RoadsQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roads/emergency': {
+      id: '/roads/emergency'
+      path: '/roads/emergency'
+      fullPath: '/roads/emergency'
+      preLoaderRoute: typeof RoadsEmergencyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roads/architecture': {
+      id: '/roads/architecture'
+      path: '/roads/architecture'
+      fullPath: '/roads/architecture'
+      preLoaderRoute: typeof RoadsArchitectureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -143,6 +242,10 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   RoutesRoute: RoutesRoute,
   SosRoute: SosRoute,
+  RoadsArchitectureRoute: RoadsArchitectureRoute,
+  RoadsEmergencyRoute: RoadsEmergencyRoute,
+  RoadsQueueRoute: RoadsQueueRoute,
+  RoadsIndexRoute: RoadsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

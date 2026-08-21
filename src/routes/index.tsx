@@ -6,6 +6,8 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { alerts, cities, liveWeather, rainfallTrend, riskZones } from "@/lib/mockData";
 import { AlertTriangle, ChevronRight, CloudRain, Droplets, Gauge, MapPin, Radio, ShieldAlert, Siren, Wind } from "lucide-react";
 import { useState } from "react";
+import { useRoadIncidents } from "@/lib/roadStore";
+import { riskScore } from "@/lib/roadData";
 
 export const Route = createFileRoute("/")({
   component: () => (
@@ -17,6 +19,10 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   const [city, setCity] = useState(cities[1]);
+  const roadIncidents = useRoadIncidents();
+  const priorityIncidents = roadIncidents.filter(
+    (i) => i.verificationStatus === "verified" && riskScore(i) >= 65,
+  ).length;
 
   return (
     <div className="px-5 pb-6 pt-2 space-y-5">
@@ -127,6 +133,33 @@ function Dashboard() {
         </div>
         <div className="flex justify-between text-[10px] text-muted-foreground mt-1.5">
           <span>Safe</span><span>Moderate</span><span>Severe</span>
+        </div>
+      </section>
+
+      {/* Urban risk overview — flood + road */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold">Urban risk overview</h2>
+          <Link to="/roads" className="text-xs text-primary flex items-center gap-0.5">
+            Road Intelligence <ChevronRight className="h-3 w-3" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Link to="/map" className="glass rounded-2xl p-3">
+            <p className="text-lg">🌊</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Flood risk</p>
+            <p className="text-sm font-bold text-danger">HIGH</p>
+          </Link>
+          <Link to="/roads" className="glass rounded-2xl p-3">
+            <p className="text-lg">🛣️</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Road risk</p>
+            <p className="text-sm font-bold text-danger">CRITICAL</p>
+          </Link>
+          <Link to="/roads/queue" className="glass rounded-2xl p-3">
+            <p className="text-lg">🚨</p>
+            <p className="text-[10px] text-muted-foreground mt-1">Priority incidents</p>
+            <p className="text-sm font-bold">{priorityIncidents}</p>
+          </Link>
         </div>
       </section>
 
