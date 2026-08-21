@@ -11,11 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SosRouteImport } from './routes/sos'
 import { Route as RoutesRouteImport } from './routes/routes'
-import { Route as RoadsRouteImport } from './routes/roads'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RoadsIndexRouteImport } from './routes/roads.index'
 
 const SosRoute = SosRouteImport.update({
   id: '/sos',
@@ -25,11 +25,6 @@ const SosRoute = SosRouteImport.update({
 const RoutesRoute = RoutesRouteImport.update({
   id: '/routes',
   path: '/routes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RoadsRoute = RoadsRouteImport.update({
-  id: '/roads',
-  path: '/roads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportsRoute = ReportsRouteImport.update({
@@ -52,24 +47,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadsIndexRoute = RoadsIndexRouteImport.update({
+  id: '/roads/',
+  path: '/roads/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads': typeof RoadsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,9 +77,9 @@ export interface FileRoutesById {
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
-  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -88,20 +88,20 @@ export interface FileRouteTypes {
     | '/insights'
     | '/map'
     | '/reports'
-    | '/roads'
     | '/routes'
     | '/sos'
+    | '/roads/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/insights' | '/map' | '/reports' | '/roads' | '/routes' | '/sos'
+  to: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos' | '/roads'
   id:
     | '__root__'
     | '/'
     | '/insights'
     | '/map'
     | '/reports'
-    | '/roads'
     | '/routes'
     | '/sos'
+    | '/roads/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -109,9 +109,9 @@ export interface RootRouteChildren {
   InsightsRoute: typeof InsightsRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
-  RoadsRoute: typeof RoadsRoute
   RoutesRoute: typeof RoutesRoute
   SosRoute: typeof SosRoute
+  RoadsIndexRoute: typeof RoadsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -128,13 +128,6 @@ declare module '@tanstack/react-router' {
       path: '/routes'
       fullPath: '/routes'
       preLoaderRoute: typeof RoutesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/roads': {
-      id: '/roads'
-      path: '/roads'
-      fullPath: '/roads'
-      preLoaderRoute: typeof RoadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reports': {
@@ -165,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roads/': {
+      id: '/roads/'
+      path: '/roads'
+      fullPath: '/roads/'
+      preLoaderRoute: typeof RoadsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -173,9 +173,9 @@ const rootRouteChildren: RootRouteChildren = {
   InsightsRoute: InsightsRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,
-  RoadsRoute: RoadsRoute,
   RoutesRoute: RoutesRoute,
   SosRoute: SosRoute,
+  RoadsIndexRoute: RoadsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
