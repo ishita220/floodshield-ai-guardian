@@ -17,7 +17,7 @@ export function BottomNav() {
     <nav className="sticky bottom-0 left-0 right-0 z-40 px-3 pb-3 pt-2">
       <div className="glass-strong rounded-3xl px-2 py-2 flex items-center justify-between shadow-glass">
         {tabs.map((t) => {
-          const active = pathname === t.to;
+          const active = t.to === "/" ? pathname === "/" : pathname.startsWith(t.to);
           const Icon = t.icon;
           return (
             <Link
