@@ -17,6 +17,10 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   const [city, setCity] = useState(cities[1]);
+  const roadIncidents = useRoadIncidents();
+  const priorityIncidents = roadIncidents.filter(
+    (i) => i.verificationStatus === "verified" && riskScore(i) >= 65,
+  ).length;
 
   return (
     <div className="px-5 pb-6 pt-2 space-y-5">
