@@ -16,6 +16,7 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoadsIndexRouteImport } from './routes/roads.index'
+import { Route as RoadsQueueRouteImport } from './routes/roads.queue'
 
 const SosRoute = SosRouteImport.update({
   id: '/sos',
@@ -52,6 +53,11 @@ const RoadsIndexRoute = RoadsIndexRouteImport.update({
   path: '/roads/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadsQueueRoute = RoadsQueueRouteImport.update({
+  id: '/roads/queue',
+  path: '/roads/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/queue': typeof RoadsQueueRoute
   '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/queue': typeof RoadsQueueRoute
   '/roads': typeof RoadsIndexRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/reports': typeof ReportsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
+  '/roads/queue': typeof RoadsQueueRoute
   '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRouteTypes {
@@ -90,9 +99,18 @@ export interface FileRouteTypes {
     | '/reports'
     | '/routes'
     | '/sos'
+    | '/roads/queue'
     | '/roads/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos' | '/roads'
+  to:
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/routes'
+    | '/sos'
+    | '/roads/queue'
+    | '/roads'
   id:
     | '__root__'
     | '/'
@@ -101,6 +119,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/routes'
     | '/sos'
+    | '/roads/queue'
     | '/roads/'
   fileRoutesById: FileRoutesById
 }
@@ -111,6 +130,7 @@ export interface RootRouteChildren {
   ReportsRoute: typeof ReportsRoute
   RoutesRoute: typeof RoutesRoute
   SosRoute: typeof SosRoute
+  RoadsQueueRoute: typeof RoadsQueueRoute
   RoadsIndexRoute: typeof RoadsIndexRoute
 }
 
@@ -165,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoadsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roads/queue': {
+      id: '/roads/queue'
+      path: '/roads/queue'
+      fullPath: '/roads/queue'
+      preLoaderRoute: typeof RoadsQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -175,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   ReportsRoute: ReportsRoute,
   RoutesRoute: RoutesRoute,
   SosRoute: SosRoute,
+  RoadsQueueRoute: RoadsQueueRoute,
   RoadsIndexRoute: RoadsIndexRoute,
 }
 export const routeTree = rootRouteImport
