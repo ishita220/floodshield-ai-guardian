@@ -35,6 +35,9 @@ export function FloodMap({
   highlightSafe = true,
   segments,
   mode = DEFAULT_TRAVEL_MODE,
+  showZones = true,
+  markers,
+  onMarkerClick,
 }: {
   height?: number | string;
   center?: [number, number];
@@ -46,6 +49,9 @@ export function FloodMap({
   highlightSafe?: boolean;
   segments?: RouteSegment[] | null;
   mode?: TravelMode;
+  showZones?: boolean;
+  markers?: MapMarker[];
+  onMarkerClick?: (id: string) => void;
 }) {
   const [mounted, setMounted] = useState(false);
   const [RL, setRL] = useState<any>(null);
@@ -161,7 +167,7 @@ export function FloodMap({
           <CircleMarker center={endpoints.end} radius={6} pathOptions={{ color: "#fff", fillColor: "#ef4444", fillOpacity: 1, weight: 2 }} />
         )}
 
-        {riskZones.map((z) => {
+        {showZones && riskZones.map((z) => {
           const depth = estimateDepthCm(z);
           const level = classifyDepth(depth, mode);
           return (
@@ -185,7 +191,7 @@ export function FloodMap({
             </Circle>
           );
         })}
-        {riskZones.map((z) => (
+        {showZones && riskZones.map((z) => (
           <CircleMarker
             key={z.id + "-m" + mode}
             center={z.coords}
@@ -197,6 +203,23 @@ export function FloodMap({
               weight: 1.5,
             }}
           />
+        ))}
+
+        {markers?.map((m) => (
+          <CircleMarker
+            key={m.id}
+            center={m.position}
+            radius={8}
+            pathOptions={{ color: "#ffffff", fillColor: m.color, fillOpacity: 1, weight: 2 }}
+            eventHandlers={{ click: () => onMarkerClick?.(m.id) }}
+          >
+            <Tooltip direction="top" opacity={0.95}>
+              <div style={{ fontSize: 11 }}>
+                <strong>{m.label}</strong>
+                {m.sub ? <><br />{m.sub}</> : null}
+              </div>
+            </Tooltip>
+          </CircleMarker>
         ))}
 
       </MapContainer>
