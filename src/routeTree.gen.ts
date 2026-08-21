@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SosRouteImport } from './routes/sos'
 import { Route as RoutesRouteImport } from './routes/routes'
+import { Route as RoadsRouteImport } from './routes/roads'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
@@ -24,6 +25,11 @@ const SosRoute = SosRouteImport.update({
 const RoutesRoute = RoutesRouteImport.update({
   id: '/routes',
   path: '/routes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadsRoute = RoadsRouteImport.update({
+  id: '/roads',
+  path: '/roads',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportsRoute = ReportsRouteImport.update({
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
+  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
+  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
 }
@@ -69,15 +77,31 @@ export interface FileRoutesById {
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
+  '/roads': typeof RoadsRoute
   '/routes': typeof RoutesRoute
   '/sos': typeof SosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
+  fullPaths:
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/roads'
+    | '/routes'
+    | '/sos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
-  id: '__root__' | '/' | '/insights' | '/map' | '/reports' | '/routes' | '/sos'
+  to: '/' | '/insights' | '/map' | '/reports' | '/roads' | '/routes' | '/sos'
+  id:
+    | '__root__'
+    | '/'
+    | '/insights'
+    | '/map'
+    | '/reports'
+    | '/roads'
+    | '/routes'
+    | '/sos'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -85,6 +109,7 @@ export interface RootRouteChildren {
   InsightsRoute: typeof InsightsRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
+  RoadsRoute: typeof RoadsRoute
   RoutesRoute: typeof RoutesRoute
   SosRoute: typeof SosRoute
 }
@@ -103,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/routes'
       fullPath: '/routes'
       preLoaderRoute: typeof RoutesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roads': {
+      id: '/roads'
+      path: '/roads'
+      fullPath: '/roads'
+      preLoaderRoute: typeof RoadsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reports': {
@@ -141,6 +173,7 @@ const rootRouteChildren: RootRouteChildren = {
   InsightsRoute: InsightsRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,
+  RoadsRoute: RoadsRoute,
   RoutesRoute: RoutesRoute,
   SosRoute: SosRoute,
 }

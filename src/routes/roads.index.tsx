@@ -43,7 +43,7 @@ import {
   falsePositiveTable,
 } from "@/lib/roadVerification";
 
-export const Route = createFileRoute("/roads")({
+export const Route = createFileRoute("/roads/")({
   head: () => ({
     meta: [
       { title: "Road Intelligence — FloodShield AI" },
