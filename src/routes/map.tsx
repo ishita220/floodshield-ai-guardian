@@ -47,8 +47,11 @@ function MapScreen() {
   return (
     <div className="relative h-full">
       <div className="px-5 pt-2 pb-3">
-        <h1 className="text-xl font-bold">Flood Risk Map</h1>
-        <p className="text-xs text-muted-foreground">Live AI heatmap · Gurgaon NCR</p>
+        <h1 className="text-xl font-bold">Flood &amp; Monsoon Context</h1>
+        <p className="text-xs text-muted-foreground">
+          Supporting layer · monsoon exposure feeds the road damage risk score
+        </p>
+
       </div>
 
       <div className="px-5 mb-3">
