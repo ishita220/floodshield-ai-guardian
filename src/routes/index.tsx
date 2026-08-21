@@ -6,6 +6,8 @@ import { RiskBadge } from "@/components/RiskBadge";
 import { alerts, cities, liveWeather, rainfallTrend, riskZones } from "@/lib/mockData";
 import { AlertTriangle, ChevronRight, CloudRain, Droplets, Gauge, MapPin, Radio, ShieldAlert, Siren, Wind } from "lucide-react";
 import { useState } from "react";
+import { useRoadIncidents } from "@/lib/roadStore";
+import { riskScore } from "@/lib/roadData";
 
 export const Route = createFileRoute("/")({
   component: () => (
