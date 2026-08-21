@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AppLayout } from "@/components/AppLayout";
-import { ArrowLeft, Cpu, Filter } from "lucide-react";
+import { ArrowLeft, ArrowRight, Cpu, Filter, Ticket } from "lucide-react";
 import {
   DAMAGE_LABELS,
   HIERARCHY_LABELS,
@@ -13,6 +13,14 @@ import {
   riskScore,
 } from "@/lib/roadData";
 import { useRoadIncidents } from "@/lib/roadStore";
+import {
+  RepairTicket,
+  TICKET_FLOW,
+  TICKET_LABELS,
+  advanceTicket,
+  createTicket,
+  useTickets,
+} from "@/lib/roadTickets";
 
 export const Route = createFileRoute("/roads/queue")({
   head: () => ({
@@ -43,6 +51,7 @@ type SortKey = "risk" | "severity" | "hierarchy";
 
 function RepairQueue() {
   const incidents = useRoadIncidents();
+  const tickets = useTickets();
   const [sort, setSort] = useState<SortKey>("risk");
   const [hierarchy, setHierarchy] = useState<RoadHierarchy | "all">("all");
   const [status, setStatus] = useState<VerificationStatus | "all">("verified");
@@ -158,6 +167,24 @@ function RepairQueue() {
                   />
                 </div>
               )}
+              {i.verificationStatus === "verified" && (
+                <TicketActions
+                  ticket={tickets.find((t) => t.incidentId === i.id) ?? null}
+                  onCreate={() =>
+                    createTicket({
+                      incidentId: i.id,
+                      location: i.location,
+                      damageType: DAMAGE_LABELS[i.damageType],
+                      severity: i.severity,
+                      riskScore: score,
+                      roadHierarchy: HIERARCHY_LABELS[i.roadHierarchy],
+                      confidence: i.confidence,
+                      evidence: i.sourceFile,
+                      priority: p,
+                    })
+                  }
+                />
+              )}
             </motion.div>
           );
         })}
@@ -170,6 +197,46 @@ function RepairQueue() {
         <Cpu className="h-3.5 w-3.5 text-primary" /> Ranking uses a transparent rule-based score — see prototype vs
         production architecture.
       </Link>
+    </div>
+  );
+}
+
+function TicketActions({ ticket, onCreate }: { ticket: RepairTicket | null; onCreate: () => void }) {
+  if (!ticket) {
+    return (
+      <button
+        onClick={onCreate}
+        className="mt-2.5 w-full glass rounded-xl py-2 text-[11px] font-semibold flex items-center justify-center gap-1.5"
+      >
+        <Ticket className="h-3.5 w-3.5 text-primary" /> Create municipal repair ticket
+      </button>
+    );
+  }
+  const idx = TICKET_FLOW.indexOf(ticket.status);
+  return (
+    <div className="mt-2.5 rounded-xl bg-secondary/60 p-2.5 space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-semibold">{ticket.id}</span>
+        <span className="text-[10px] text-muted-foreground">Evidence: {ticket.evidence}</span>
+      </div>
+      <div className="flex items-center gap-1">
+        {TICKET_FLOW.map((s, k) => (
+          <div key={s} className="flex-1">
+            <div className={`h-1 rounded-full ${k <= idx ? "gradient-neon" : "bg-border"}`} />
+            <p className={`text-[8px] mt-1 text-center ${k <= idx ? "text-foreground" : "text-muted-foreground"}`}>
+              {TICKET_LABELS[s]}
+            </p>
+          </div>
+        ))}
+      </div>
+      {ticket.status !== "resolved" && (
+        <button
+          onClick={() => advanceTicket(ticket.id)}
+          className="w-full gradient-neon text-neon-foreground rounded-lg py-1.5 text-[11px] font-semibold flex items-center justify-center gap-1"
+        >
+          Advance to {TICKET_LABELS[TICKET_FLOW[idx + 1]]} <ArrowRight className="h-3 w-3" />
+        </button>
+      )}
     </div>
   );
 }
