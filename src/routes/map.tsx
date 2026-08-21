@@ -10,12 +10,30 @@ import { Layers, Search, SlidersHorizontal, Siren } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/map")({
+  head: () => ({
+    meta: [
+      { title: "Flood & Monsoon Context — FloodShield AI" },
+      {
+        name: "description",
+        content:
+          "Monsoon waterlogging context that feeds the road damage risk score — flood-exposure zones across Gurgaon NCR by travel mode.",
+      },
+      { property: "og:title", content: "Flood & Monsoon Context — FloodShield AI" },
+      {
+        property: "og:description",
+        content: "Supporting monsoon layer for road repair prioritization.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: () => (
     <AppLayout>
       <MapScreen />
     </AppLayout>
   ),
 });
+
 
 function MapScreen() {
   const [filter, setFilter] = useState<"all" | "low" | "moderate" | "severe">("all");
