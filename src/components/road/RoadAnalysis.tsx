@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { FloodMap } from "@/components/FloodMap";
