@@ -10,12 +10,30 @@ import { Layers, Search, SlidersHorizontal, Siren } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/map")({
+  head: () => ({
+    meta: [
+      { title: "Flood & Monsoon Context — FloodShield AI" },
+      {
+        name: "description",
+        content:
+          "Monsoon waterlogging context that feeds the road damage risk score — flood-exposure zones across Gurgaon NCR by travel mode.",
+      },
+      { property: "og:title", content: "Flood & Monsoon Context — FloodShield AI" },
+      {
+        property: "og:description",
+        content: "Supporting monsoon layer for road repair prioritization.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: () => (
     <AppLayout>
       <MapScreen />
     </AppLayout>
   ),
 });
+
 
 function MapScreen() {
   const [filter, setFilter] = useState<"all" | "low" | "moderate" | "severe">("all");
@@ -29,8 +47,11 @@ function MapScreen() {
   return (
     <div className="relative h-full">
       <div className="px-5 pt-2 pb-3">
-        <h1 className="text-xl font-bold">Flood Risk Map</h1>
-        <p className="text-xs text-muted-foreground">Live AI heatmap · Gurgaon NCR</p>
+        <h1 className="text-xl font-bold">Flood &amp; Monsoon Context</h1>
+        <p className="text-xs text-muted-foreground">
+          Supporting layer · monsoon exposure feeds the road damage risk score
+        </p>
+
       </div>
 
       <div className="px-5 mb-3">

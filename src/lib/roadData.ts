@@ -447,3 +447,36 @@ export const PRODUCTION_ARCHITECTURE = [
   "Real flood and weather feeds (IMD / OpenWeatherMap)",
   "Human verification workflow before ticket dispatch",
 ];
+
+/* ------------------------- City-wide demo statistics ------------------------- */
+
+/**
+ * Demo dataset baseline for the city-wide counters shown on the Overview screen.
+ * These represent a simulated municipal survey backlog; incidents analysed in the
+ * current session are added on top of them.
+ */
+export const CITY_BASELINE = {
+  defects: 239,
+  critical: 29,
+  high: 71,
+  verified: 186,
+};
+
+export function cityStats(incidents: RoadIncident[]) {
+  const verified = incidents.filter((i) => i.verificationStatus === "verified");
+  let critical = 0;
+  let high = 0;
+  for (const i of verified) {
+    const p = priorityOf(riskScore(i));
+    if (p === "critical") critical += 1;
+    else if (p === "high") high += 1;
+  }
+  return {
+    defects: CITY_BASELINE.defects + incidents.length,
+    critical: CITY_BASELINE.critical + critical,
+    high: CITY_BASELINE.high + high,
+    verified: CITY_BASELINE.verified + verified.length,
+    pending: incidents.filter((i) => i.verificationStatus === "pending").length,
+    rejected: incidents.filter((i) => i.verificationStatus === "rejected").length,
+  };
+}

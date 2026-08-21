@@ -16,7 +16,9 @@ import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoadsIndexRouteImport } from './routes/roads.index'
+import { Route as RoadsVerifyRouteImport } from './routes/roads.verify'
 import { Route as RoadsQueueRouteImport } from './routes/roads.queue'
+import { Route as RoadsMapRouteImport } from './routes/roads.map'
 import { Route as RoadsEmergencyRouteImport } from './routes/roads.emergency'
 import { Route as RoadsArchitectureRouteImport } from './routes/roads.architecture'
 
@@ -55,9 +57,19 @@ const RoadsIndexRoute = RoadsIndexRouteImport.update({
   path: '/roads/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RoadsVerifyRoute = RoadsVerifyRouteImport.update({
+  id: '/roads/verify',
+  path: '/roads/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RoadsQueueRoute = RoadsQueueRouteImport.update({
   id: '/roads/queue',
   path: '/roads/queue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RoadsMapRoute = RoadsMapRouteImport.update({
+  id: '/roads/map',
+  path: '/roads/map',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RoadsEmergencyRoute = RoadsEmergencyRouteImport.update({
@@ -80,7 +92,9 @@ export interface FileRoutesByFullPath {
   '/sos': typeof SosRoute
   '/roads/architecture': typeof RoadsArchitectureRoute
   '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/map': typeof RoadsMapRoute
   '/roads/queue': typeof RoadsQueueRoute
+  '/roads/verify': typeof RoadsVerifyRoute
   '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRoutesByTo {
@@ -92,7 +106,9 @@ export interface FileRoutesByTo {
   '/sos': typeof SosRoute
   '/roads/architecture': typeof RoadsArchitectureRoute
   '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/map': typeof RoadsMapRoute
   '/roads/queue': typeof RoadsQueueRoute
+  '/roads/verify': typeof RoadsVerifyRoute
   '/roads': typeof RoadsIndexRoute
 }
 export interface FileRoutesById {
@@ -105,7 +121,9 @@ export interface FileRoutesById {
   '/sos': typeof SosRoute
   '/roads/architecture': typeof RoadsArchitectureRoute
   '/roads/emergency': typeof RoadsEmergencyRoute
+  '/roads/map': typeof RoadsMapRoute
   '/roads/queue': typeof RoadsQueueRoute
+  '/roads/verify': typeof RoadsVerifyRoute
   '/roads/': typeof RoadsIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,7 +137,9 @@ export interface FileRouteTypes {
     | '/sos'
     | '/roads/architecture'
     | '/roads/emergency'
+    | '/roads/map'
     | '/roads/queue'
+    | '/roads/verify'
     | '/roads/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -131,7 +151,9 @@ export interface FileRouteTypes {
     | '/sos'
     | '/roads/architecture'
     | '/roads/emergency'
+    | '/roads/map'
     | '/roads/queue'
+    | '/roads/verify'
     | '/roads'
   id:
     | '__root__'
@@ -143,7 +165,9 @@ export interface FileRouteTypes {
     | '/sos'
     | '/roads/architecture'
     | '/roads/emergency'
+    | '/roads/map'
     | '/roads/queue'
+    | '/roads/verify'
     | '/roads/'
   fileRoutesById: FileRoutesById
 }
@@ -156,7 +180,9 @@ export interface RootRouteChildren {
   SosRoute: typeof SosRoute
   RoadsArchitectureRoute: typeof RoadsArchitectureRoute
   RoadsEmergencyRoute: typeof RoadsEmergencyRoute
+  RoadsMapRoute: typeof RoadsMapRoute
   RoadsQueueRoute: typeof RoadsQueueRoute
+  RoadsVerifyRoute: typeof RoadsVerifyRoute
   RoadsIndexRoute: typeof RoadsIndexRoute
 }
 
@@ -211,11 +237,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoadsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/roads/verify': {
+      id: '/roads/verify'
+      path: '/roads/verify'
+      fullPath: '/roads/verify'
+      preLoaderRoute: typeof RoadsVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/roads/queue': {
       id: '/roads/queue'
       path: '/roads/queue'
       fullPath: '/roads/queue'
       preLoaderRoute: typeof RoadsQueueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/roads/map': {
+      id: '/roads/map'
+      path: '/roads/map'
+      fullPath: '/roads/map'
+      preLoaderRoute: typeof RoadsMapRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/roads/emergency': {
@@ -244,7 +284,9 @@ const rootRouteChildren: RootRouteChildren = {
   SosRoute: SosRoute,
   RoadsArchitectureRoute: RoadsArchitectureRoute,
   RoadsEmergencyRoute: RoadsEmergencyRoute,
+  RoadsMapRoute: RoadsMapRoute,
   RoadsQueueRoute: RoadsQueueRoute,
+  RoadsVerifyRoute: RoadsVerifyRoute,
   RoadsIndexRoute: RoadsIndexRoute,
 }
 export const routeTree = rootRouteImport
