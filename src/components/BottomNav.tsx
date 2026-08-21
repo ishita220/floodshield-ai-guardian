@@ -1,14 +1,14 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, Map, Navigation, Users, BarChart3, Construction } from "lucide-react";
+import { LayoutDashboard, ScanSearch, ListOrdered, MapPin, CloudRain, Construction } from "lucide-react";
 import { motion } from "framer-motion";
 
 const tabs = [
-  { to: "/", label: "Home", icon: LayoutDashboard },
-  { to: "/map", label: "Map", icon: Map },
-  { to: "/routes", label: "Route", icon: Navigation },
+  { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/roads", label: "Roads", icon: Construction },
-  { to: "/reports", label: "Reports", icon: Users },
-  { to: "/insights", label: "Insights", icon: BarChart3 },
+  { to: "/roads/verify", label: "Verify", icon: ScanSearch },
+  { to: "/roads/queue", label: "Queue", icon: ListOrdered },
+  { to: "/roads/map", label: "Risk Map", icon: MapPin },
+  { to: "/map", label: "Monsoon", icon: CloudRain },
 ] as const;
 
 export function BottomNav() {
