@@ -30,7 +30,7 @@ function Dashboard() {
       <header className="flex items-center justify-between">
         <div>
           <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">FloodShield AI</p>
-          <h1 className="text-2xl font-bold mt-0.5">Good morning, Aarav</h1>
+          <h1 className="text-2xl font-bold mt-0.5">Good morning, Runtime Terror</h1>
         </div>
         <div className="h-11 w-11 rounded-2xl glass flex items-center justify-center relative">
           <Radio className="h-5 w-5 text-primary" />
