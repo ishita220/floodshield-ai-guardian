@@ -14,6 +14,7 @@ import { Route as RoutesRouteImport } from './routes/routes'
 import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as InsightsRouteImport } from './routes/insights'
+import { Route as ExitsRouteImport } from './routes/exits'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoadsIndexRouteImport } from './routes/roads.index'
 import { Route as RoadsVerifyRouteImport } from './routes/roads.verify'
@@ -45,6 +46,11 @@ const MapRoute = MapRouteImport.update({
 const InsightsRoute = InsightsRouteImport.update({
   id: '/insights',
   path: '/insights',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExitsRoute = ExitsRouteImport.update({
+  id: '/exits',
+  path: '/exits',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -85,6 +91,7 @@ const RoadsArchitectureRoute = RoadsArchitectureRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/exits': typeof ExitsRoute
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/exits': typeof ExitsRoute
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/exits': typeof ExitsRoute
   '/insights': typeof InsightsRoute
   '/map': typeof MapRoute
   '/reports': typeof ReportsRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/exits'
     | '/insights'
     | '/map'
     | '/reports'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/exits'
     | '/insights'
     | '/map'
     | '/reports'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/exits'
     | '/insights'
     | '/map'
     | '/reports'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExitsRoute: typeof ExitsRoute
   InsightsRoute: typeof InsightsRoute
   MapRoute: typeof MapRoute
   ReportsRoute: typeof ReportsRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/insights'
       fullPath: '/insights'
       preLoaderRoute: typeof InsightsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exits': {
+      id: '/exits'
+      path: '/exits'
+      fullPath: '/exits'
+      preLoaderRoute: typeof ExitsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -277,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExitsRoute: ExitsRoute,
   InsightsRoute: InsightsRoute,
   MapRoute: MapRoute,
   ReportsRoute: ReportsRoute,

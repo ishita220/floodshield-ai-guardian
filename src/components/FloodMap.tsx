@@ -185,7 +185,7 @@ export function FloodMap({
               <Tooltip direction="top" opacity={0.95}>
                 <div style={{ fontSize: 11 }}>
                   <strong>{z.name}</strong><br />
-                  {level.toUpperCase()} • ~{depth} cm water • {z.reports} reports
+                  {(level === "low" ? "OPEN" : level === "moderate" ? "RISKY" : "CUT-OFF")} • ~{depth} cm water • {z.reports} reports
                 </div>
               </Tooltip>
             </Circle>
