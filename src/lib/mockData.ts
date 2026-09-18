@@ -41,6 +41,10 @@ export const riskZones: {
   { id: "z4", name: "Hero Honda Chowk", area: "Gurgaon", level: "severe", coords: [28.4221, 76.9926], radius: 800, drainage: 18, elevation: "Low", reports: 21, depthCm: 70 },
   { id: "z5", name: "Golf Course Road", area: "Gurgaon", level: "low", coords: [28.4419, 77.0954], radius: 450, drainage: 78, elevation: "High", reports: 1, depthCm: 4 },
   { id: "z6", name: "MG Road Metro", area: "Gurgaon", level: "moderate", coords: [28.4796, 77.0805], radius: 500, drainage: 52, elevation: "Mid", reports: 5, depthCm: 28 },
+  { id: "z7", name: "Sohna Road service lane", area: "Gurgaon", level: "moderate", coords: [28.4397, 77.0392], radius: 500, drainage: 39, elevation: "Low", reports: 8, depthCm: 40 },
+  { id: "z8", name: "Rezang La Marg", area: "Palam Vihar", level: "severe", coords: [28.5107, 76.9957], radius: 520, drainage: 26, elevation: "Low", reports: 9, depthCm: 58 },
+  { id: "z9", name: "Bajghera Road", area: "Palam Vihar", level: "severe", coords: [28.5019, 76.9807], radius: 560, drainage: 20, elevation: "Low", reports: 12, depthCm: 66 },
+  { id: "z10", name: "Old Delhi–Gurugram Road", area: "Palam Vihar", level: "severe", coords: [28.5165, 77.0234], radius: 520, drainage: 31, elevation: "Low", reports: 7, depthCm: 55 },
 ];
 
 export const alerts = [

@@ -1,9 +1,10 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { LayoutDashboard, ScanSearch, ListOrdered, MapPin, CloudRain, Construction } from "lucide-react";
+import { Home, ScanSearch, ListOrdered, MapPin, CloudRain, Construction, Signpost } from "lucide-react";
 import { motion } from "framer-motion";
 
 const tabs = [
-  { to: "/", label: "Overview", icon: LayoutDashboard },
+  { to: "/", label: "Home", icon: Home },
+  { to: "/exits", label: "Exits", icon: Signpost },
   { to: "/roads", label: "Roads", icon: Construction },
   { to: "/roads/verify", label: "Verify", icon: ScanSearch },
   { to: "/roads/queue", label: "Queue", icon: ListOrdered },
@@ -15,7 +16,7 @@ export function BottomNav() {
   const { pathname } = useLocation();
   return (
     <nav className="sticky bottom-0 left-0 right-0 z-40 px-3 pb-3 pt-2">
-      <div className="glass-strong rounded-3xl px-2 py-2 flex items-center justify-between shadow-glass">
+      <div className="glass-strong rounded-3xl px-1 py-2 flex items-center justify-between shadow-glass overflow-x-auto scrollbar-none">
         {tabs.map((t) => {
           const active = t.to === "/" || t.to === "/roads" ? pathname === t.to : pathname.startsWith(t.to);
           const Icon = t.icon;
@@ -23,7 +24,7 @@ export function BottomNav() {
             <Link
               key={t.to}
               to={t.to}
-              className="relative flex-1 flex flex-col items-center gap-1 py-2 rounded-2xl"
+              className="relative min-w-12 flex-1 flex flex-col items-center gap-1 py-2 rounded-2xl"
             >
               {active && (
                 <motion.span
