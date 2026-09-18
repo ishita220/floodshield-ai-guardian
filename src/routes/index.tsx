@@ -14,6 +14,7 @@ import {
   MapPin,
   ScanSearch,
   ShieldCheck,
+  Signpost,
 } from "lucide-react";
 import { useMemo } from "react";
 import { useRoadIncidents } from "@/lib/roadStore";
@@ -27,6 +28,8 @@ import {
   riskScore,
 } from "@/lib/roadData";
 import { liveWeather } from "@/lib/mockData";
+import { exitSummary, neighbourhoods } from "@/lib/neighbourhoodExits";
+import { DEFAULT_TRAVEL_MODE } from "@/lib/travelModes";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -63,6 +66,7 @@ const MARKER_COLOR: Record<Priority, string> = {
 function Overview() {
   const incidents = useRoadIncidents();
   const stats = cityStats(incidents);
+  const homeExits = exitSummary(neighbourhoods[0], DEFAULT_TRAVEL_MODE);
 
   const ranked = useMemo(
     () =>
@@ -98,8 +102,8 @@ function Overview() {
       <header className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">FloodShield AI</p>
-          <h1 className="text-xl font-bold mt-0.5 leading-tight">Road Intelligence Command Center</h1>
-          <p className="text-[11px] text-muted-foreground mt-1">Detect → Verify → Assess → Contextualize → Prioritize → Repair</p>
+          <h1 className="text-xl font-bold mt-0.5 leading-tight">Good morning</h1>
+          <p className="text-[11px] text-muted-foreground mt-1">Gurugram · live neighbourhood safety</p>
         </div>
         <div className="h-11 w-11 rounded-2xl glass flex items-center justify-center relative shrink-0">
           <Construction className="h-5 w-5 text-primary" />
@@ -107,16 +111,20 @@ function Overview() {
         </div>
       </header>
 
-      {/* Core message */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-strong rounded-2xl p-4 border-primary/30"
+        className="glass-strong rounded-2xl border-primary/30 overflow-hidden"
       >
-        <p className="text-sm font-semibold leading-snug">
-          FloodShield doesn’t just detect potholes. It verifies them, understands their severity and context, and tells
-          cities what to repair first.
-        </p>
+        <Link to="/exits" className="block p-4">
+          <div className="flex items-center justify-between">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-primary">Your neighbourhood · Sector 29</p>
+            <Signpost className="h-4 w-4 text-primary" />
+          </div>
+          <p className="text-2xl font-bold mt-2">{homeExits.cutOff.length} of {homeExits.exits.length} exits cut off</p>
+          <p className="text-sm mt-2">Best way out: <span className="font-semibold text-safe">{homeExits.best?.road}</span></p>
+          <p className="text-[11px] text-muted-foreground mt-2 flex items-center gap-1">Check every exit <ChevronRight className="h-3 w-3" /></p>
+        </Link>
       </motion.div>
 
       {/* Road summary cards */}

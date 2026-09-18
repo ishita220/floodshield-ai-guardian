@@ -15,13 +15,12 @@ export const Route = createFileRoute("/map")({
       { title: "Flood & Monsoon Context — FloodShield AI" },
       {
         name: "description",
-        content:
-          "Monsoon waterlogging context that feeds the road damage risk score — flood-exposure zones across Gurgaon NCR by travel mode.",
+        content: "See which Gurugram roads are open, risky, or cut off by waterlogging for each travel mode.",
       },
       { property: "og:title", content: "Flood & Monsoon Context — FloodShield AI" },
       {
         property: "og:description",
-        content: "Supporting monsoon layer for road repair prioritization.",
+        content: "Mode-aware road usability and water depth across Gurugram.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -47,9 +46,9 @@ function MapScreen() {
   return (
     <div className="relative h-full">
       <div className="px-5 pt-2 pb-3">
-        <h1 className="text-xl font-bold">Flood &amp; Monsoon Context</h1>
+        <h1 className="text-xl font-bold">Which roads are still usable?</h1>
         <p className="text-xs text-muted-foreground">
-          Supporting layer · monsoon exposure feeds the road damage risk score
+          Live-style water depth translated into exit status
         </p>
 
       </div>
@@ -89,9 +88,9 @@ function MapScreen() {
 
       <div className="px-5 mt-3 flex items-center justify-between text-[11px] text-muted-foreground">
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5"><LegendDot level="low" /> Low</span>
-          <span className="flex items-center gap-1.5"><LegendDot level="moderate" /> Moderate</span>
-          <span className="flex items-center gap-1.5"><LegendDot level="severe" /> Severe</span>
+          <span className="flex items-center gap-1.5"><LegendDot level="low" /> Open</span>
+          <span className="flex items-center gap-1.5"><LegendDot level="moderate" /> Risky</span>
+          <span className="flex items-center gap-1.5"><LegendDot level="severe" /> Cut-off</span>
         </div>
         <button className="flex items-center gap-1 text-primary"><Layers className="h-3.5 w-3.5" /> Layers</button>
       </div>
@@ -103,7 +102,9 @@ function MapScreen() {
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <p className="font-medium text-sm truncate">{z.name}</p>
-                <RiskBadge level={z.level} />
+                <span className={`rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase ${z.level === "low" ? "border-safe/40 bg-safe/10 text-safe" : z.level === "moderate" ? "border-warning/40 bg-warning/10 text-warning" : "border-danger/40 bg-danger/10 text-danger"}`}>
+                  {z.level === "low" ? "Open" : z.level === "moderate" ? "Risky" : "Cut-off"}
+                </span>
               </div>
               <p className="text-[11px] text-muted-foreground mt-1">
                 {z.area} · ~{z.depthCm} cm water · Drainage {z.drainage}% · {z.reports} reports

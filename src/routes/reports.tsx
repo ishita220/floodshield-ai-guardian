@@ -4,6 +4,17 @@ import { communityReports } from "@/lib/mockData";
 import { Camera, CheckCircle2, Image as ImageIcon, MapPin, Plus, ThumbsUp, Video } from "lucide-react";
 
 export const Route = createFileRoute("/reports")({
+  validateSearch: (search: Record<string, unknown>) => ({ exit: typeof search.exit === "string" ? search.exit : "" }),
+  head: () => ({
+    meta: [
+      { title: "Community Reports — FloodShield AI" },
+      { name: "description", content: "Share a current waterlogging or blocked-road report in Gurugram." },
+      { property: "og:title", content: "Community Reports — FloodShield AI" },
+      { property: "og:description", content: "Commuter-confirmed waterlogging and blocked exit updates." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: () => (
     <AppLayout>
       <ReportsScreen />
@@ -12,6 +23,7 @@ export const Route = createFileRoute("/reports")({
 });
 
 function ReportsScreen() {
+  const { exit } = Route.useSearch();
   return (
     <div className="px-5 pt-2 pb-6 space-y-4">
       <header className="flex items-center justify-between">
@@ -28,6 +40,10 @@ function ReportsScreen() {
       <div className="glass-strong rounded-2xl p-4">
         <p className="text-sm font-semibold mb-1">Report waterlogging</p>
         <p className="text-[11px] text-muted-foreground mb-3">Help others avoid danger. AI filters duplicates automatically.</p>
+        <label className="block mb-3">
+          <span className="text-[10px] text-muted-foreground">Blocked exit or road</span>
+          <input defaultValue={exit} placeholder="Enter road name" className="mt-1 w-full rounded-xl border border-glass-border bg-secondary/70 px-3 py-2.5 text-sm outline-none focus:border-primary" />
+        </label>
         <div className="grid grid-cols-3 gap-2">
           {[
             { icon: Camera, label: "Photo" },
