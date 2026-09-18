@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AlertTriangle, ArrowUpRight, CheckCircle2, Clock3, MapPin, Radio, ShieldAlert } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Clock3, MapPin, Radio, ShieldAlert } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { ModeSelector } from "@/components/ModeSelector";
 import { Button } from "@/components/ui/button";
@@ -61,7 +61,7 @@ function ExitsScreen() {
           </div>
           <div className="grid grid-cols-2 gap-2 mt-4">
             <Button asChild variant="destructive" className="rounded-xl"><Link to="/sos">Call SOS</Link></Button>
-            <Button asChild variant="secondary" className="rounded-xl"><Link to="/sos" search={{ focus: "shelters" }}>Nearest shelter</Link></Button>
+            <Button asChild variant="secondary" className="rounded-xl"><Link to="/sos">Nearest shelter</Link></Button>
           </div>
         </section>
       )}

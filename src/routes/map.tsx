@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { FloodMap, LegendDot } from "@/components/FloodMap";
-import { RiskBadge } from "@/components/RiskBadge";
 import { ModeSelector } from "@/components/ModeSelector";
 import { useTravelMode } from "@/hooks/useTravelMode";
 import { classifyDepth, estimateDepthCm } from "@/lib/travelModes";

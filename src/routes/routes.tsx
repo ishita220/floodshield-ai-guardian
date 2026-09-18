@@ -46,6 +46,7 @@ type ScoredRoute = {
   label: string;
   description: string;
   duration: string;
+  durationSeconds: number;
   distance: string;
   path: [number, number][];
   risk: RouteRisk;
@@ -134,6 +135,7 @@ type RawRoute = {
   id: string;
   description: string;
   duration: string;
+  durationSeconds: number;
   distance: string;
   path: [number, number][];
   steps: { instruction: string; maneuver: string; distance: string; duration: string; path: [number, number][] }[];
@@ -159,7 +161,7 @@ function RoutesScreen() {
   );
 
   // Re-classify already-fetched routes whenever the travel mode changes — no refetch.
-  const routes: ScoredRoute[] = useMemo(() => {
+  const allScored: ScoredRoute[] = useMemo(() => {
     const scored = raw.map((r) => ({
       ...r,
       label: r.description || "Route",
@@ -178,7 +180,12 @@ function RoutesScreen() {
     return scored;
   }, [raw, mode]);
 
-  const noSafeRoute = routes.length > 0 && routes.every((r) => r.steps.some((s) => s.risk.level === "severe"));
+  const routes = allScored.filter((route) => !route.steps.some((step) => step.risk.level === "severe"));
+  const noSafeRoute = raw.length > 0 && routes.length === 0;
+  const shortestSeconds = raw.reduce((shortest, route) => Math.min(shortest, route.durationSeconds), Number.POSITIVE_INFINITY);
+  const cutOffRoads = new Set(
+    allScored.flatMap((route) => route.steps.flatMap((step) => step.risk.zones.filter((zone) => zone.level === "severe").map((zone) => zone.name))),
+  );
 
   const active = routes.find((r) => r.id === selected) ?? routes[0] ?? null;
   const activeStep = active && stepIndex !== null ? active.steps[stepIndex] ?? null : null;
@@ -221,6 +228,7 @@ function RoutesScreen() {
         id: r.id,
         description: r.description,
         duration: formatDuration(r.durationSeconds),
+          durationSeconds: r.durationSeconds,
         distance: formatDistance(r.distanceMeters),
         path: decodePolyline(r.encodedPolyline),
         steps: (r.steps ?? []).map((s) => ({
@@ -290,7 +298,7 @@ function RoutesScreen() {
         <div className="rounded-2xl p-3 flex items-start gap-2 border border-danger/40 bg-danger/10">
           <TriangleAlert className="h-4 w-4 shrink-0 mt-0.5 text-danger" />
           <p className="text-xs text-danger">
-            No safe {modeShort(mode)} route found. Consider {mode === "car" ? "waiting for water levels to recede" : "Two-Wheeler or Car"}, or wait for water levels to recede.
+             No usable {modeShort(mode)} route found without entering a cut-off road. Stay put if safe or wait for water levels to recede.
           </p>
         </div>
       )}
@@ -306,8 +314,7 @@ function RoutesScreen() {
         <div className="flex items-center gap-2 px-3 py-2 rounded-xl gradient-neon shadow-neon">
           <Sparkles className="h-4 w-4 text-neon-foreground" />
           <p className="text-xs font-medium text-neon-foreground">
-            {modeLabel(mode)} mode · AI analyzed {routes.length} live route{routes.length > 1 ? "s" : ""} ·{" "}
-            {routes.filter((r) => r.risk.level === "low").length} avoid flood-prone zones
+             {modeLabel(mode)} mode · {routes.length} usable route{routes.length !== 1 ? "s" : ""} · cut-off roads excluded
           </p>
         </div>
       )}
@@ -339,6 +346,10 @@ function RoutesScreen() {
                 </span>
                 <span className="text-muted-foreground">{r.distance}</span>
               </div>
+               <div className="mt-2 flex items-center justify-between text-[10px]">
+                 <span className="font-semibold text-safe">Avoids {cutOffRoads.size} cut-off road{cutOffRoads.size === 1 ? "" : "s"}</span>
+                 <span className="text-muted-foreground">+{Math.max(0, Math.round((r.durationSeconds - shortestSeconds) / 60))} min vs shortest</span>
+               </div>
               {isActive && r.risk.zones.length > 0 && (
                 <p className="text-[10px] text-warning mt-2">Passes: {r.risk.zones.map((z) => z.name).join(", ")}</p>
               )}
